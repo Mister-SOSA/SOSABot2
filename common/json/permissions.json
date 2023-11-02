@@ -1,0 +1,44 @@
+{
+    "0": {
+        "level": 0,
+        "emoji": "🚫",
+        "name": "Banned",
+        "description": "User is banned from interacting with the bot."
+    },
+    "1": {
+        "level": 1,
+        "emoji": "👤",
+        "name": "Guest",
+        "description": "User is a guest with limited access to features."
+    },
+    "2": {
+        "level": 2,
+        "emoji": "👋",
+        "name": "Following",
+        "description": "User is following the channel."
+    },
+    "3": {
+        "level": 3,
+        "emoji": "💎",
+        "name": "Subscriber/Booster",
+        "description": "User has subscribed or boosted the server for premium access."
+    },
+    "4": {
+        "level": 4,
+        "emoji": "🛡️",
+        "name": "Moderator",
+        "description": "User can moderate content and users with certain privileges."
+    },
+    "5": {
+        "level": 5,
+        "emoji": "🔰",
+        "name": "Admin",
+        "description": "User has full administrative rights to the bot."
+    },
+    "6": {
+        "level": 6,
+        "emoji": "👑",
+        "name": "SOSA",
+        "description": "The Don."
+    }
+}

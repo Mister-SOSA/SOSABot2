@@ -1,0 +1,5 @@
+{
+    "USERS_TABLE": "users",
+    "CHAT_TABLE": "chat",
+    "FLASHBANG_ENDPOINT_URL": "http://209.122.57.17:9000/flashbang"
+}

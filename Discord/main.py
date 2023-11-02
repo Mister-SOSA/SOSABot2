@@ -1,0 +1,34 @@
+import discord
+from discord.ext import commands
+import os
+from rich import print
+import asyncio
+
+intents = discord.Intents.all()
+
+client = commands.Bot(command_prefix='!', intents=intents)
+
+for filename in os.listdir('./cogs/commands'):
+    if filename.endswith('.py') and not filename.startswith('_'):
+        asyncio.run(client.load_extension(f'cogs.commands.{filename[:-3]}'))
+        print(f'[green]>> Loaded Command: {filename[:-3]}[/green]')
+
+
+for filename in os.listdir('./cogs/listeners'):
+    if filename.endswith('.py') and not filename.startswith('_'):
+        asyncio.run(client.load_extension(f'cogs.listeners.{filename[:-3]}'))
+        print(f'[blue]>> Loaded Listener: {filename[:-3]}[/blue]')
+
+
+for filename in os.listdir('./cogs/tasks'):
+    if filename.endswith('.py') and not filename.startswith('_'):
+        asyncio.run(client.load_extension(f'cogs.tasks.{filename[:-3]}'))
+        print(f'[yellow]>> Loaded Task: {filename[:-3]}[/yellow]')
+
+
+@client.event
+async def on_ready():
+    await client.tree.sync()
+    print(f'[green]>> Logged in as {client.user}[/green]')
+
+client.run(os.environ.get("DISCORD_BOT_TOKEN"))
