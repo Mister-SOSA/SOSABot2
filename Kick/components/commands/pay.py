@@ -9,7 +9,7 @@ async def run(client, msg, args):
         await msg.chatroom.send(f"@{author.username} Usage: !pay <username> <amount>")
         return
     
-    if not await user_exists(User(kick_username=args[0])):
+    if not await user_exists(kick_username=args[0]):
         await msg.chatroom.send(f"@{author.username} That user is not registered.")
         return
 

@@ -1,6 +1,6 @@
 from utils.bot_instance import client
 import common.utils.configutil as config
-from utils.command_handler import parse_command
+from utils.command_handler import cmd_mgr
 from common.utils import database_manager as db
 from common.objects.user import User
 
@@ -12,7 +12,7 @@ async def on_message(msg):
     kick_user = await msg.author.to_user()
     user = User(kick_id=msg.author.id, kick_username=kick_user.username)
 
-    if not await db.user_exists(user):
+    if not await db.user_exists(kick_id=user.kick_id):
         await user.initialize(msg)
         await db.create_user(user)
     else:
@@ -24,4 +24,4 @@ async def on_message(msg):
     if not msg.content.startswith(COMMAND_PREFIX):
         return
 
-    await parse_command(msg)
+    await cmd_mgr.parse(msg)

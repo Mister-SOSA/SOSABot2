@@ -1,10 +1,7 @@
 from utils.bot_instance import client
 import sys
-from utils.command_handler import load_commands
-from threading import Thread
-import random
-import asyncio
-import time
+from utils.command_handler import cmd_mgr
+from rich import print
 
 
 @client.event
@@ -17,6 +14,6 @@ async def on_ready():
     user = await client.fetch_user(username)
     await user.chatroom.connect()
 
-    print(f'Connected to {username}!')
+    print(f'[green]>> Connected to Chatroom: {username}[/green]')
 
-    await load_commands()
+    await cmd_mgr.load()
