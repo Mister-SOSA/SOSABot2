@@ -33,7 +33,7 @@ async def run(client, msg, args):
 
     await db.adjust_user_balance(winnings, kick_id=msg.author.id)
 
-    await msg.chatroom.send(f"{' '.join(slots_results)}\n{breakdown}\n{'+' if winnings > 0 else ''}{winnings} coins.")
+    await msg.chatroom.send(f"[{' | '.join(slots_results)}] - [{breakdown}\n{'+' if winnings > 0 else ''}] | [{winnings} coins]")
 
 COMMAND = Command(
     func=run,
