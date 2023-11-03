@@ -74,9 +74,3 @@ class SlotMachine:
         print(f"Winrate: {winrate*100:.2f}%")
         print(f"Net Profit: {net_profit}")
         print(f"Average Profit per Spin: {avg_profit:.2f}")
-
-# Usage
-if __name__ == "__main__":
-    machine = SlotMachine()
-    x = machine.spin(100)
-    print(x)
