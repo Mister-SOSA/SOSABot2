@@ -19,7 +19,7 @@ async def fetch_user(strict=True, **kwargs):
     """Fetches a user based on the provided criteria."""
     for key, value in kwargs.items():
         if value:
-            result = client.table(USERS_TABLE).select("*").eq(key, value) if strict else client.table(USERS_TABLE).select("*").ilike(key, value).execute().data
+            result = client.table(USERS_TABLE).select("*").eq(key, value).execute().data if strict else client.table(USERS_TABLE).select("*").ilike(key, value).execute().data
             if result:
                 return result[0]
     return None
@@ -111,7 +111,10 @@ async def _get_updated_aliases(user: User):
     current_username = user.kick_username
     db_user = await fetch_user(kick_id=user.kick_id)
     db_username = db_user['kick_username']
-    aliases = json.loads(db_user.get('aliases', '[]'))
+    
+    aliases_str = db_user.get('aliases') or '[]'
+    aliases = json.loads(aliases_str)
+
     if current_username != db_username and db_username not in aliases:
         aliases.append(db_username)
     return aliases
