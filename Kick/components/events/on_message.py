@@ -20,9 +20,9 @@ async def on_message(msg):
         await db.update_user(user)
 
     await db.log_chat_message(msg)
-    await db.adjust_user_balance(1, kick_id=user.kick_id)
 
     if not msg.content.startswith(COMMAND_PREFIX):
+        await db.adjust_user_balance(1, kick_id=user.kick_id)
         return
 
     await cmd_mgr.parse(msg)
