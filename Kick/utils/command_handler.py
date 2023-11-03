@@ -3,21 +3,25 @@ import importlib
 from utils.bot_instance import client
 import common.utils.database_manager as db
 import common.utils.permission_manager as pm
+from rich import print
+
 
 class CommandManager:
     def __init__(self):
         self.commands = {}
-    
+
     def _get_module(self, component_name):
         """Return the module for a given component name."""
         return importlib.import_module(f'components.commands.{component_name}')
-    
+
     async def load(self):
         """Load all commands from the 'commands' directory."""
         for component in os.listdir('./components/commands'):
             if component.endswith('.py') and not component.startswith('_'):
                 module = self._get_module(component[:-3])
                 self.commands[module.COMMAND.name.lower()] = module.COMMAND
+                print(
+                    f'[cyan]>> Loaded Command: {module.COMMAND.name}[/cyan]')
 
     async def reload(self, command_name=None):
         """Reload a specific command or all commands if none is specified."""

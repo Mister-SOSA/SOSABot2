@@ -17,3 +17,5 @@ async def on_ready():
     print(f'[green]>> Connected to Chatroom: {username}[/green]')
 
     await cmd_mgr.load()
+
+    print(f'[yellow]---- Ready! ----[/yellow]')
