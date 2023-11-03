@@ -11,6 +11,7 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
 USERS_TABLE = fetch_constant("USERS_TABLE")
 CHAT_TABLE = fetch_constant("CHAT_TABLE")
+BETS_TABLE = fetch_constant("BETS_TABLE")
 
 client: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -152,3 +153,23 @@ async def fetch_number_of_chat_messages(**kwargs) -> int:
             if result:
                 return len(result)
     return 0
+
+async def start_bet(title, options):
+    """Starts a new bet."""
+    payload = {
+        'title': title,
+        'options': json.dumps(options),
+        'created_at': get_timestamp()
+    }
+    client.table(BETS_TABLE).insert(payload).execute()
+    
+async def bet_is_open() -> bool:
+    """Checks if the last bet is currently open."""
+    result = client.table(BETS_TABLE).select("*").order('created_at', desc=True).limit(1).execute().data
+    if result:
+        return result[0]['is_open']
+    return False
+
+async def stop_bet():
+    """Stops the last bet."""
+    client.table(BETS_TABLE).update({"is_open": False}).order('created_at', desc=True).limit(1).execute()
