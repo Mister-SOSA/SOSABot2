@@ -11,21 +11,17 @@ async def run(client, msg, args):
     try:
         amount = int(args[0])
     except ValueError:
-        await msg.chatroom.send("Please specify a valid amount to gamble.")
+        await msg.chatroom.send(f"@{msg.author.username} Please specify a valid amount to gamble.}"
         return
 
     if amount < 1:
-        await msg.chatroom.send("Please specify a valid amount to gamble.")
+        await msg.chatroom.send(f"@{msg.author.username} You must gamble at least 1 coin."
         return
 
     user_balance = await db.fetch_user_balance(kick_id=msg.author.id)
 
-    if user_balance is None:
-        await msg.chatroom.send("You do not have an account.")
-        return
-
     if amount > user_balance:
-        await msg.chatroom.send("You do not have enough coins.")
+        await msg.chatroom.send(f"{msg.author.username} You are {amount - user_balance} coins short for this bet.")
         return
 
     slot_machine = SlotMachine()
