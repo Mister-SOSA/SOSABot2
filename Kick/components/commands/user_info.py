@@ -8,7 +8,9 @@ async def run(client, msg, args):
     
     fetch_args = [
         {"kick_id": args[0]},
-        {"strict": False, "kick_username": args[0]}
+        {"strict": False, "kick_username": args[0]},
+        {"strict": False, "discord_username": args[0]},
+        {"strict": False, "discord_id": args[0]}
     ]
 
     user = None
