@@ -33,7 +33,7 @@
         "level": 5,
         "emoji": "🔰",
         "name": "Admin",
-        "description": "User has full administrative rights to the bot."
+        "description": "User has administrative privileges."
     },
     "6": {
         "level": 6,
