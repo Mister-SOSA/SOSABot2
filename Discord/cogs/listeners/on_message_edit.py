@@ -3,7 +3,6 @@ from discord.ext import commands
 from common.utils.configutil import fetch_convar
 
 MODLOG_CHANNEL_ID = fetch_convar("MODLOG_CHANNEL_ID")
-EXCLUDED_USER_IDS = fetch_convar("EDIT_LISTENER_EXCLUDED_USER_IDS")
 
 class OnMessageEdit(commands.Cog):
     def __init__(self, client):
