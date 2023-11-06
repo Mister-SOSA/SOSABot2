@@ -3,6 +3,7 @@ from discord.ext import commands
 from common.utils.configutil import fetch_convar
 
 MODLOG_CHANNEL_ID = fetch_convar("MODLOG_CHANNEL_ID")
+EXCLUDED_USER_IDS = fetch_convar("EDIT_LISTENER_EXCLUDED_USER_IDS")
 
 class OnMessageEdit(commands.Cog):
     def __init__(self, client):
@@ -10,7 +11,11 @@ class OnMessageEdit(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
+        if before.msg.author.bot:
+            return
+        
         channel = self.client.get_channel(MODLOG_CHANNEL_ID)
+        
         
         embed = discord.Embed(
             title="📝 Message Edited",

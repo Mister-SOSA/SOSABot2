@@ -10,6 +10,9 @@ class OnMessageDelete(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, msg):
+        if msg.author.bot:
+            return
+        
         channel = self.client.get_channel(MODLOG_CHANNEL_ID)
         
         embed = discord.Embed(
