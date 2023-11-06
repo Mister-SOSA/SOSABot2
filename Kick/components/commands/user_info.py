@@ -6,11 +6,17 @@ async def run(client, msg, args):
         await msg.chatroom.send("Please specify a user ID or username.")
         return
     
-    user = await db.fetch_user(kick_id=args[0]) 
+    fetch_args = [
+        {"kick_id": args[0]},
+        {"strict": False, "kick_username": args[0]}
+    ]
+
+    user = None
+    for arg in fetch_args:
+        user = await db.fetch_user(**arg)
+        if user:
+            break
     
-    if not user:
-        user = await db.fetch_user(strict=False, kick_username=args[0])
-        
     if not user:
         await msg.chatroom.send("User not found.")
         return
