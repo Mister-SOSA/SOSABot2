@@ -1,0 +1,25 @@
+import discord
+from discord.ext import commands
+from common.utils.configutil import fetch_convar
+
+MODLOG_CHANNEL_ID = fetch_convar("MODLOG_CHANNEL_ID")
+
+class OnMemberRemove(commands.Cog):
+    def __init__(self, client):
+        self.client = client
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        channel = self.client.get_channel(MODLOG_CHANNEL_ID)
+        
+        embed = discord.Embed(
+            title="👋 User Left",
+            description=f"User left: {member.name}",
+            color=discord.Color.red()
+        )
+        
+        await channel.send(embed=embed)
+        
+        
+async def setup(client):
+    await client.add_cog(OnMemberRemove(client))
