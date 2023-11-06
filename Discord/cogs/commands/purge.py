@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 
-
+@commands.has_permissions(manage_messages=True)
 @commands.hybrid_command(name="purge", description='Delete messages in bulk.')
 async def purge(ctx, amount: int):
     try:

@@ -2,7 +2,7 @@ from discord.ext import commands
 import discord
 import requests
 
-
+@commands.has_role("Admin")
 @commands.hybrid_command(name="avatar", description='Change the avatar of the bot.')
 async def avatar(ctx, image_url: str):
     try:
