@@ -30,24 +30,24 @@ async def user_info(ctx, query: str):
     embed.add_field(
         name="<:kick:1171189813060313140> Kick Username",
         value=f"{user['kick_username']}",
-        inline=True
+        inline=False
     )
     
     embed.add_field(
         name="<:kick:1171189813060313140> Kick ID",
-        value=f"{user['kick_id']}",
+        value=f"`{user['kick_id']}`",
         inline=False
     )
     
     embed.add_field(
         name="<:discord:1171190447834681374> Discord Username",
         value=f"{user['discord_username']}",
-        inline=True
+        inline=False
     )
     
     embed.add_field(
         name="<:discord:1171190447834681374> Discord ID",
-        value=f"{user['discord_id']}",
+        value=f"`{user['discord_id']}`",
         inline=False
     )
     
@@ -79,6 +79,12 @@ async def user_info(ctx, query: str):
         text=f"Requested by {ctx.author.name}",
         icon_url=ctx.author.avatar
     )
+    
+    if user['discord_id']:
+        discord_user = await ctx.guild.fetch_member(user['discord_id'])
+        embed.set_thumbnail(
+            url=discord_user.avatar
+        )
     
     await ctx.send(embed=embed)
 
