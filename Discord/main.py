@@ -3,6 +3,10 @@ from discord.ext import commands
 import os
 from rich import print
 import asyncio
+import sys
+
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')))
 
 intents = discord.Intents.all()
 
