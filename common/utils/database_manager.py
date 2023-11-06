@@ -92,8 +92,13 @@ async def update_user(user: User):
         "permission_level": user.permission_level,
         "aliases": json.dumps(aliases) if aliases else None
     }
+    
     if not condition_field or not condition_value:
         return False
+    
+    update_payload = {key: value for key, value in update_payload.items() if value}
+
+    
     client.table(USERS_TABLE).update(update_payload).eq(condition_field, condition_value).execute()
     return True
 
