@@ -1,9 +1,10 @@
 from objects.command import Command
 import aiohttp
 from common.utils.configutil import fetch_constant
+import os
 
 # Constants for better clarity
-FLASHBANG_ENDPOINT = fetch_constant("FLASHBANG_ENDPOINT_URL")
+FLASHBANG_ENDPOINT = os.environ.get("FLASHBANG_ENDPOINT_URL")
 TIMEOUT_DURATION = 10  # for example, you can adjust
 
 # Helper functions to make the main function clearer
