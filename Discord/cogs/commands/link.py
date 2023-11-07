@@ -31,9 +31,9 @@ async def link(ctx):
         """
     )
     
-    link_message = await ctx.send(embed=embed)
+    link_message = await ctx.send(embed=embed, ephemeral=True)
     
-    await asyncio.sleep(5)
+    await asyncio.sleep(300)
     
     if await db.link_in_progress(ctx.author.id):
         await db.expire_link(code)

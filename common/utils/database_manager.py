@@ -251,3 +251,11 @@ async def link_in_progress(discord_id):
 async def expire_link(code):
     """Expires a link."""
     client.table(LINK_TABLE).update({"outcome": "EXPIRED"}).eq('link_code', code).execute()
+    
+    
+async def link_used(code):
+    """Checks if a link has been used."""
+    result = client.table(LINK_TABLE).select("*").eq('link_code', code).execute().data
+    if result:
+        return result[0]['outcome'] == "COMPLETED"
+    return False

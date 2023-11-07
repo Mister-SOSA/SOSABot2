@@ -1,5 +1,5 @@
 from objects.command import Command
-from common.utils.database_manager import fetch_link, complete_link, link_expired, already_linked
+from common.utils.database_manager import fetch_link, complete_link, link_expired, already_linked, link_used
 
 
 async def run(client, msg, args):
@@ -21,6 +21,10 @@ async def run(client, msg, args):
     
     if await link_expired(args[0]):
         await msg.chatroom.send(f"@{author.username} This link has expired. Please run /link in my Discord server for a new code.")
+        return
+    
+    if await link_used(args[0]):
+        await msg.chatroom.send(f"@{author.username} This code has already been used. Please run /link in my Discord server for a link code.")
         return
         
     
