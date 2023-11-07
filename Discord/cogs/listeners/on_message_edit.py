@@ -10,7 +10,7 @@ class OnMessageEdit(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if before.msg.author.bot:
+        if before.author.bot:
             return
         
         channel = self.client.get_channel(MODLOG_CHANNEL_ID)
