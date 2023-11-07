@@ -9,6 +9,8 @@ import logging
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
+from cogs.commands.giveaway import GiveawayView
+
 logging.getLogger("httpx").setLevel(logging.ERROR)
 logging.getLogger("aiohttp").setLevel(logging.ERROR)
 
@@ -34,9 +36,11 @@ for filename in os.listdir('./cogs/tasks'):
         print(f'[yellow]>> Loaded Task: {filename[:-3]}[/yellow]')
 
 
+
 @client.event
 async def on_ready():
     await client.tree.sync()
+    client.add_view(GiveawayView())
     print(f'[green]>> Logged in as {client.user}[/green]')
 
 client.run(os.environ.get("DISCORD_BOT_TOKEN"))

@@ -1,5 +1,6 @@
 {
     "USERS_TABLE": "users",
     "CHAT_TABLE": "chat",
-    "BETS_TABLE": "bets"
+    "BETS_TABLE": "bets",
+    "LINK_TABLE": "link"
 }

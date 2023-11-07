@@ -5,6 +5,7 @@ from supabase import create_client, Client
 from common.utils.configutil import fetch_constant
 from common.objects.user import User
 from common.utils.time_tool import get_timestamp
+from common.utils.configutil import fetch_convar
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
@@ -12,6 +13,7 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 USERS_TABLE = fetch_constant("USERS_TABLE")
 CHAT_TABLE = fetch_constant("CHAT_TABLE")
 BETS_TABLE = fetch_constant("BETS_TABLE")
+LINK_TABLE = fetch_constant("LINK_TABLE")
 
 client: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -45,6 +47,13 @@ async def fetch_user_permission_level(**kwargs):
     """Fetches the permission level of a user."""
     user = await fetch_user(**kwargs)
     return user["permission_level"] if user and "permission_level" in user else 0
+
+async def set_user_permission_level(permission_level: int, **kwargs):
+    """Sets the permission level of a user."""
+    for key, value in kwargs.items():
+        if value:
+            client.table(USERS_TABLE).update({"permission_level": permission_level}).eq(key, value).execute()
+            break
 
 
 async def create_user(user: User):
@@ -95,6 +104,10 @@ async def update_user(user: User):
     
     if not condition_field or not condition_value:
         return False
+    
+    if update_payload['is_subscribed'] and update_payload['permission_level'] < fetch_convar("SUBSCRIBER_PERMISSION_LEVEL"):
+        update_payload['permission_level'] = fetch_convar("SUBSCRIBER_PERMISSION_LEVEL")
+    
     
     update_payload = {key: value for key, value in update_payload.items() if value}
 
@@ -178,3 +191,63 @@ async def bet_is_open() -> bool:
 async def stop_bet():
     """Stops the last bet."""
     client.table(BETS_TABLE).update({"is_open": False}).order('created_at', desc=True).limit(1).execute()
+    
+    
+async def start_link(discord_username, discord_id, link_code, valid_duration):
+    """Starts a new link."""
+    payload = {
+        'discord_username': discord_username,
+        'discord_id': discord_id,
+        'created_at': get_timestamp(),
+        'outcome': "STARTED",
+        'link_code': link_code,
+        'expiration_time': datetime.datetime.strftime(datetime.timedelta(seconds=valid_duration) + datetime.datetime.strptime(get_timestamp(), '%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
+    }
+    client.table(LINK_TABLE).insert(payload).execute()
+    
+async def fetch_link(link_code):
+    """Fetches a link based on the provided criteria."""
+    result = client.table(LINK_TABLE).select("*").eq('link_code', link_code).execute().data
+    if result:
+        return result[0]
+    return None
+
+async def complete_link(link_code, kick_id, kick_username):
+    """Completes a link."""
+    link = await fetch_link(link_code)
+    if link:
+        client.table(LINK_TABLE).update({"kick_id": kick_id, "kick_username": kick_username, "outcome": "COMPLETED"}).eq('link_code', link_code).execute()
+        client.table(USERS_TABLE).update({
+            "discord_id": link['discord_id'],
+            "discord_username": link['discord_username']
+        }).eq('kick_id', kick_id).execute()
+        return True
+    
+    
+async def already_linked(**kwargs):
+    """Checks if a user is already linked."""
+    user = await fetch_user(**kwargs)
+    
+    if not user:
+        return False
+    
+    return bool(user['discord_id'] and user['discord_username'])
+
+
+async def link_expired(code):
+    """Checks if a link has expired."""
+    result = client.table(LINK_TABLE).select("*").eq('link_code', code).execute().data
+    if result:
+        return datetime.datetime.strptime(result[0]['expiration_time'], '%Y-%m-%dT%H:%M:%S') < datetime.datetime.strptime(get_timestamp(), '%Y-%m-%d %H:%M:%S')
+    return True
+
+async def link_in_progress(discord_id):
+    """Checks if a link is in progress."""
+    result = client.table(LINK_TABLE).select("*").eq('discord_id', discord_id).execute().data
+    if result:
+        return result[0]['outcome'] == "STARTED"
+    return False
+
+async def expire_link(code):
+    """Expires a link."""
+    client.table(LINK_TABLE).update({"outcome": "EXPIRED"}).eq('link_code', code).execute()

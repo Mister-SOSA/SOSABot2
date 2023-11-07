@@ -1,51 +1,52 @@
+from typing import Optional
 from discord.ext import commands
 import discord
 from common.utils.configutil import fetch_convar
 
 GIVEAWAY_CHANNEL_ID = fetch_convar("GIVEAWAY_CHANNEL_ID")
 
+class GiveawayView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label="Enter Giveaway", style=discord.ButtonStyle.green, custom_id="enter:giveaway", emoji="🎉")
+    async def enter_giveaway(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("You have entered the giveaway!", ephemeral=True)
+
 @commands.hybrid_command(name="giveaway", description='Giveaway controls.')
-async def giveaway(ctx, action: str = commands.parameter(description="The action to perform. Valid actions are `create`, and `end`"), title = commands.parameter(description="The title of the giveaway."), description = commands.parameter(description="The description of the giveaway."), winners = commands.parameter(description="The number of winners for the giveaway."), image_url = commands.parameter(description="The image URL for the giveaway.")):
+async def giveaway(ctx, action: str, title: str, description: str, image_url: str):
     if action == "create":
         embed = discord.Embed(
-            title = f"🎉 {title}",
-            description = f"{description}"
+            title=f"🎉 {title}",
+            description=description
         )
         
-        embed.set_image(url=image_url)
+        embed.set_thumbnail(url=image_url)
         
         embed.add_field(
-            name="🎫 Winners",
-            value=f"{winners}",
+            name="🎫 Entries",
+            value=0,
             inline=True
         )
         
         embed.add_field(
             name="👥 Host",
-            value=f"{ctx.author.mention}",
+            value=ctx.author.mention,
             inline=True
         )
         
-        class GiveawayButton(discord.ui.Button):
-            def __init__(self):
-                super().__init__(style=discord.ButtonStyle.green, label="Enter Giveaway")
-            
-            async def callback(self, interaction: discord.Interaction):
-                await interaction.response.send_message("You have entered the giveaway!", ephemeral=True)
-                
-        class GiveawayView(discord.ui.View):
-            def __init__(self):
-                super().__init__()
-                self.add_item(GiveawayButton())
-                
         view = GiveawayView()
-        
         channel = ctx.guild.get_channel(GIVEAWAY_CHANNEL_ID)
-        message = await channel.send(embed=embed, view=view)
-        
-        
+        if channel:
+            await channel.send(embed=embed, view=view)
+            await ctx.send("Giveaway created!", ephemeral=True)
+        else:
+            await ctx.send("Giveaway channel not found.", ephemeral=True)
+    elif action == "end":
+        # You would implement the logic for ending a giveaway here
+        pass
+    else:
+        await ctx.send("Invalid action. Valid actions are `create` and `end`.", ephemeral=True)
+
 async def setup(client):
     client.add_command(giveaway)
-        
-        
-        
