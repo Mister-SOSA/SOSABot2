@@ -11,6 +11,12 @@ async def user_info(ctx, query: str):
         {"strict": False, "discord_username": query},
         {"strict": False, "discord_id": query}
     ]
+    
+    if query.startswith("<@") and query.endswith(">"):
+        query = query[2:-1]
+        if query.startswith("!"):
+            query = query[1:]
+        fetch_args.append({"discord_id": query})
 
     user = None
     for args in fetch_args:
