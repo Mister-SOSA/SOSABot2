@@ -259,3 +259,13 @@ async def link_used(code):
     if result:
         return result[0]['outcome'] == "COMPLETED"
     return False
+
+async def in_giveaway(giveaway_table_name, kick_id=None, discord_id=None):
+    """Checks if a user is in a giveaway."""
+    if kick_id:
+        result = client.table(giveaway_table_name).select("*").eq('kick_id', kick_id).execute().data
+    elif discord_id:
+        result = client.table(giveaway_table_name).select("*").eq('discord_id', discord_id).execute().data
+    else:
+        return False
+    return bool(result)
