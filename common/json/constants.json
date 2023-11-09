@@ -2,5 +2,7 @@
     "USERS_TABLE": "users",
     "CHAT_TABLE": "chat",
     "BETS_TABLE": "bets",
-    "LINK_TABLE": "link"
+    "LINK_TABLE": "link",
+    "GIVEAWAYS_TABLE": "giveaways",
+    "GIVEAWAY_ENTRIES_TABLE": "giveaway_entries"
 }

@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import random
 from supabase import create_client, Client
 from common.utils.configutil import fetch_constant
 from common.objects.user import User
@@ -14,6 +15,8 @@ USERS_TABLE = fetch_constant("USERS_TABLE")
 CHAT_TABLE = fetch_constant("CHAT_TABLE")
 BETS_TABLE = fetch_constant("BETS_TABLE")
 LINK_TABLE = fetch_constant("LINK_TABLE")
+GIVEAWAYS_TABLE = fetch_constant("GIVEAWAYS_TABLE")
+GIVEAWAY_ENTRIES_TABLE = fetch_constant("GIVEAWAY_ENTRIES_TABLE")
 
 client: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -138,6 +141,10 @@ async def _get_updated_aliases(user: User):
         aliases.append(db_username)
     return aliases
 
+async def user_is_subscribed(**kwargs):
+    """Checks if a user is subscribed."""
+    user = await fetch_user(**kwargs)
+    return user['is_subscribed'] if user else False
 
 async def log_chat_message(msg):
     """Logs a chat message in the database."""
@@ -260,12 +267,70 @@ async def link_used(code):
         return result[0]['outcome'] == "COMPLETED"
     return False
 
-async def in_giveaway(giveaway_table_name, kick_id=None, discord_id=None):
-    """Checks if a user is in a giveaway."""
-    if kick_id:
-        result = client.table(giveaway_table_name).select("*").eq('kick_id', kick_id).execute().data
-    elif discord_id:
-        result = client.table(giveaway_table_name).select("*").eq('discord_id', discord_id).execute().data
-    else:
-        return False
-    return bool(result)
+async def create_giveaway(name, description, number_of_winners, notes=None):
+    """ Creates a new giveaway entry in the giveaways table """
+    payload = {
+        'created_at': get_timestamp(),
+        'name': name,
+        'description': description,
+        'number_of_winners': number_of_winners,
+        'notes': notes,
+        'open': True,
+        'giveaway_id': random.randint(100000, 999999)
+    }
+    
+    client.table(GIVEAWAYS_TABLE).insert(payload).execute()
+    
+    
+async def fetch_giveaway(giveaway_id):
+    """ Fetches a giveaway from the giveaways table """
+    result = client.table(GIVEAWAYS_TABLE).select("*").eq('giveaway_id', giveaway_id).execute().data
+    if result:
+        return result[0]
+    return None
+
+
+async def fetch_open_giveaway():
+    """ Fetches the open giveaway from the giveaways table """
+    result = client.table(GIVEAWAYS_TABLE).select("*").eq('open', True).execute().data
+    if result:
+        return result[0]
+    return None
+
+
+async def close_giveaway(giveaway_id):
+    """ Closes a giveaway in the giveaways table """
+    client.table(GIVEAWAYS_TABLE).update({"open": False}).eq('giveaway_id', giveaway_id).execute()
+
+
+async def user_entered_giveaway(giveaway_id, discord_id):
+    """ Checks if a user has entered a giveaway """
+    result = client.table(GIVEAWAY_ENTRIES_TABLE).select("*").eq('giveaway_id', giveaway_id).eq('discord_id', discord_id).execute().data
+    if result:
+        return True
+    return False
+
+async def enter_giveaway(discord_username, discord_id, number_of_entries, giveaway_id):
+    """ Enters a user in the GIVEAWAY_ENTRIES_TABLE
+    DB Columns:
+    - created_at: timestamp
+    - discord_name: string
+    - discord_id: string
+    - number_of_entries: int2
+    - giveaway_id: string
+    """
+    
+    client.table(GIVEAWAY_ENTRIES_TABLE).insert({
+        "created_at": get_timestamp(),
+        "discord_name": discord_username,
+        "discord_id": discord_id,
+        "number_of_entries": number_of_entries,
+        "giveaway_id": giveaway_id
+    }).execute()
+
+async def number_of_entries(giveaway_id):
+    """ Returns the number of entries for a giveaway """
+    result = client.table(GIVEAWAY_ENTRIES_TABLE).select("number_of_entries").eq('giveaway_id', giveaway_id).execute().data
+    if result:
+        return sum([entry['number_of_entries'] for entry in result])
+    return 0
