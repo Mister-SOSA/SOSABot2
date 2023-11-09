@@ -1,6 +1,8 @@
 from objects.command import Command
-from common.utils.database_manager import fetch_link, complete_link, link_expired, already_linked, link_used
-
+from common.utils.database_manager import fetch_link, complete_link, link_expired, already_linked, link_used, fetch_user
+from common.utils.configutil import fetch_convar
+import os
+import aiohttp
 
 async def run(client, msg, args):
     author = await msg.author.to_user()
@@ -26,12 +28,34 @@ async def run(client, msg, args):
     if await link_used(args[0]):
         await msg.chatroom.send(f"@{author.username} This code has already been used. Please run /link in my Discord server for a link code.")
         return
-        
     
     await complete_link(link["link_code"], author.id, kick_username=author.username)
     
+    await assign_linked_role(link["discord_id"])
+    
     await msg.chatroom.send(f"@{author.username} Your accounts have been linked.")
 
+
+async def assign_linked_role(discord_id):
+    role_id = fetch_convar("LINKED_ROLE_ID")
+    guild_id = fetch_convar("GUILD_ID")
+
+    url = f"https://discord.com/api/v10/guilds/{guild_id}/members/{discord_id}/roles/{role_id}"
+    
+    headers = {
+        "Authorization": f"Bot {os.getenv('DISCORD_BOT_TOKEN')}",
+        "User-Agent": "Bot",
+        "Content-Type": "application/json"
+    }
+    
+    print(url, headers)
+    
+    async with aiohttp.ClientSession() as session:
+        async with session.put(url, headers=headers) as response:
+            print(f"Response: {response.status}")
+            print(await response.text())
+            
+            
 COMMAND = Command(
     func=run,
     name="Link",
