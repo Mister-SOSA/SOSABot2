@@ -60,7 +60,7 @@ class GiveawayView(discord.ui.View):
         if await db.user_is_subscribed(discord_id=interaction.user.id):
             user_entries += 1
             entry_message += "\n\n*You have been given an extra entry for being a subscriber!* 🎉"
-
+            
         if interaction.user.premium_since:
             user_entries += 1
             entry_message += "\n\n*You have been given an extra entry for boosting the server!* 🎉"
@@ -74,7 +74,7 @@ class GiveawayView(discord.ui.View):
         
         await interaction.response.send_message(embed=embed, ephemeral=True)
         
-        await notify_owner(client=interaction.client, title = f"{interaction.user.name} Entered Giveaway", description=f"User {interaction.user.name} entered the {current_giveaway['name']} giveaway.", color=discord.Color.green())
+        await notify_owner(client=interaction.client, title = f"{interaction.user.name} Entered Giveaway", description=f"User {interaction.user.name} entered the {current_giveaway['name']} giveaway.\n\nMessage: {entry_message}", color=discord.Color.green())
         
         embed = interaction.message.embeds[0]
         
@@ -106,11 +106,7 @@ async def giveaway(ctx, action: str, title: str, description: str, image_url: st
             inline=True
         )
         
-        embed.add_field(
-            name="👥 Host",
-            value=ctx.author.mention,
-            inline=True
-        )
+        embed.set_footer(text=f"💫 Kick Subscribers and Server Boosters get an extra entry for each!")
         
         view = GiveawayView()
         
