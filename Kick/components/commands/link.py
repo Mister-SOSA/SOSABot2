@@ -48,12 +48,9 @@ async def assign_linked_role(discord_id):
         "Content-Type": "application/json"
     }
     
-    print(url, headers)
-    
     async with aiohttp.ClientSession() as session:
         async with session.put(url, headers=headers) as response:
-            print(f"Response: {response.status}")
-            print(await response.text())
+            pass
             
             
 COMMAND = Command(
