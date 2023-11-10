@@ -1,7 +1,9 @@
 from discord.ext import commands
 from common.utils import database_manager as db
 import discord
+from utils.custom_checks import check_linked
 
+@check_linked()
 @commands.hybrid_command(
     name="pay", 
     description='Pay another user some coins.',
