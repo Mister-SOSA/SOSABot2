@@ -6,6 +6,7 @@ import discord
     name="reload", 
     description='Reload a cog or the entire bot.'
 )
+@commands.has_any_role("SOSA", "Admin")
 async def cog_reload(ctx, cog: str = None):
     if cog is None:
         await reload_all(ctx)
