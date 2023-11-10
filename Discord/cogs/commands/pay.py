@@ -3,19 +3,15 @@ from common.utils import database_manager as db
 import discord
 from utils.custom_checks import check_linked
 
-@check_linked()
 @commands.hybrid_command(
     name="pay", 
-    description='Pay another user some coins.',
-    help='Pay another user some coins.',
-    usage='!pay <username> <amount>',
-    aliases=[],
-    brief='Pay another user some coins.'
+    description='Pay another user some coins.'
 )
 @discord.app_commands.describe(
     amount="The amount of coins to pay.",
     user="The user to pay."
 )
+@check_linked()
 async def pay(ctx, amount: discord.app_commands.Range[int, 1, None], user: discord.User):
     
     sender_balance = await db.fetch_user_balance(discord_id=ctx.author.id)
