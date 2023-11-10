@@ -125,6 +125,8 @@ async def start_giveaway(ctx, title: str, description: str, image_url: str, numb
 @commands.has_role("SOSA")
 @commands.hybrid_command(name="close_giveaway", description="Close a giveaway.", usage="close_giveaway <giveaway_id> <message_id> <winners>")
 async def close_giveaway(ctx, giveaway_id: str, message_id: str, winner_ids: str):
+    ctx.interaction.response.defer()
+    
     giveaway = await db.fetch_giveaway(giveaway_id=giveaway_id)
     winner_ids = winner_ids.split(",")
     
@@ -158,9 +160,9 @@ async def close_giveaway(ctx, giveaway_id: str, message_id: str, winner_ids: str
         inline=False
     )
     
-    await db.close_giveaway(giveaway_id)
+    await embed_message.edit(embed=embed, view=None)
     
-    await embed_message.edit(embed=embed)
+    await db.close_giveaway(giveaway_id)
     
     return        
 
