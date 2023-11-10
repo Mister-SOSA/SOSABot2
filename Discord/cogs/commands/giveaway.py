@@ -91,7 +91,16 @@ class GiveawayView(discord.ui.View):
         
 
 @commands.has_role("SOSA")
-@commands.hybrid_command(name="start_giveaway", description='Giveaway controls.')
+@commands.hybrid_command(
+    name="start_giveaway", 
+    description='Giveaway controls.'
+    )
+@discord.app_commands.describe(
+    title="The title of the giveaway. Should not include the word \"Giveaway\".",
+    description="The description of the giveaway.",
+    image_url="The image URL to use for the giveaway.",
+    number_of_winners="The number of winners for the giveaway."
+)
 async def start_giveaway(ctx, title: str, description: str, image_url: str, number_of_winners: Optional[int] = 1):
         
     embed = discord.Embed(
@@ -123,7 +132,16 @@ async def start_giveaway(ctx, title: str, description: str, image_url: str, numb
         
 
 @commands.has_role("SOSA")
-@commands.hybrid_command(name="close_giveaway", description="Close a giveaway.", usage="close_giveaway <giveaway_id> <message_id> <winners>")
+@commands.hybrid_command(
+    name="close_giveaway", 
+    description="Close a giveaway.", 
+    usage="close_giveaway <giveaway_id> <message_id> <winners>"
+)
+@discord.app_commands.describe(
+    giveaway_id="The ID of the giveaway to close.",
+    message_id="The ID of the giveaway message to edit.",
+    winners="The IDs of the winners, separated by commas and no spaces."
+)
 async def close_giveaway(ctx, giveaway_id: str, message_id: str, winner_ids: str):
     ctx.interaction.response.defer()
     

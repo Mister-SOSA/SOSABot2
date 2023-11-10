@@ -3,7 +3,13 @@ import discord
 import requests
 
 @commands.has_role("Admin")
-@commands.hybrid_command(name="avatar", description='Change the avatar of the bot.')
+@commands.hybrid_command(
+    name="avatar", 
+    description='Change the avatar of the bot.'
+)
+@discord.app_commands.describe(
+    image_url="The URL of the image to use as the avatar."
+)
 async def avatar(ctx, image_url: str):
     try:
         img = requests.get(image_url)

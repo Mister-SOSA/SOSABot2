@@ -2,8 +2,14 @@ from discord.ext import commands
 import discord
 
 @commands.has_permissions(manage_messages=True)
-@commands.hybrid_command(name="purge", description='Delete messages in bulk.')
-async def purge(ctx, amount: int):
+@commands.hybrid_command(
+    name="purge", 
+    description='Delete messages in bulk.'
+)
+@discord.app_commands.describe(
+    amount="The amount of messages to delete."
+)
+async def purge(ctx, amount: discord.app_commands.Range[int, 1, None]):
     try:
         await ctx.defer()
         await ctx.channel.purge(limit=amount)

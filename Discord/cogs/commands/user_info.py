@@ -3,7 +3,14 @@ from common.utils import database_manager as db
 import discord
 
 @commands.has_any_role("SOSA", "Admin", "Moderator")
-@commands.hybrid_command(name="userinfo", description='Look up a user\'s information.', aliases=["info", "lookup"])
+@commands.hybrid_command(
+    name="userinfo", 
+    description='Look up a user\'s information.', 
+    aliases=["info", "lookup"]
+)
+@discord.app_commands.describe(
+    query="The user to look up. Can be a Kick username, Discord username, Kick ID, or Discord ID."
+)
 async def user_info(ctx, query: str):
     fetch_args = [
         {"kick_id": query},
