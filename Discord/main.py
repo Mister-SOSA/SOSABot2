@@ -9,7 +9,7 @@ import logging
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
-from cogs.commands.giveaway import GiveawayView
+from Discord.cogs.commands.giveaway import GiveawayView
 from common.utils.line_counter import get_lines
 
 logging.getLogger("httpx").setLevel(logging.ERROR)

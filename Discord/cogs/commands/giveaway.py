@@ -59,11 +59,13 @@ class GiveawayView(discord.ui.View):
         
         if await db.user_is_subscribed(discord_id=interaction.user.id):
             user_entries += 1
-            entry_message += "\n\n*You have been given an extra entry for being a subscriber!* 🎉"
+            entry_message += "\n\n*You have been given an extra entry for being a subscriber!* 💚"
             
         if interaction.user.premium_since:
             user_entries += 1
-            entry_message += "\n\n*You have been given an extra entry for boosting the server!* 🎉"
+            entry_message += "\n\n*You have been given an extra entry for boosting the server!* 🚀"
+        
+        entry_message += f"\n\nGood luck! 🍀"
         
         await db.enter_giveaway(interaction.user.name, interaction.user.id, user_entries, current_giveaway['giveaway_id'])
         
@@ -89,40 +91,79 @@ class GiveawayView(discord.ui.View):
         
 
 @commands.has_role("SOSA")
-@commands.hybrid_command(name="giveaway", description='Giveaway controls.')
-async def giveaway(ctx, action: str, title: str, description: str, image_url: str, number_of_winners: Optional[int] = 1):
-    if action == "create":
-        embed = discord.Embed(
-            title=f"🎉 Giveaway: {title}",
-            description=description,
-            color=discord.Color.pink()
-        )
+@commands.hybrid_command(name="start_giveaway", description='Giveaway controls.')
+async def start_giveaway(ctx, title: str, description: str, image_url: str, number_of_winners: Optional[int] = 1):
         
-        embed.set_thumbnail(url=image_url)
-        
-        embed.add_field(
-            name="🎫 Entries",
-            value=0,
-            inline=True
-        )
-        
-        embed.set_footer(text=f"💫 Kick Subscribers and Server Boosters get an extra entry for each!")
-        
-        view = GiveawayView()
-        
-        channel = ctx.guild.get_channel(GIVEAWAY_CHANNEL_ID)
-        
-        if channel:
-            await db.create_giveaway(title, description, number_of_winners)
-            await channel.send(embed=embed, view=view)
-            await ctx.send("Giveaway created!", ephemeral=True)
-        else:
-            await ctx.send("Giveaway channel not found.", ephemeral=True)
-    elif action == "end":
-        # You would implement the logic for ending a giveaway here
-        pass
+    embed = discord.Embed(
+        title=f"🎉 Giveaway: {title}",
+        description=description,
+        color=discord.Color.pink()
+    )
+    
+    embed.set_thumbnail(url=image_url)
+    
+    embed.add_field(
+        name="🎫 Entries",
+        value=0,
+        inline=True
+    )
+    
+    embed.set_footer(text=f"💫 Kick Subscribers and Server Boosters get an extra entry for each!")
+    
+    view = GiveawayView()
+    
+    channel = ctx.guild.get_channel(GIVEAWAY_CHANNEL_ID)
+    
+    if channel:
+        await db.create_giveaway(title, description, number_of_winners)
+        await channel.send(embed=embed, view=view)
+        await ctx.send("Giveaway created!", ephemeral=True)
     else:
-        await ctx.send("Invalid action. Valid actions are `create` and `end`.", ephemeral=True)
+        await ctx.send("Giveaway channel not found.", ephemeral=True)
+        
+
+@commands.has_role("SOSA")
+@commands.hybrid_command(name="close_giveaway", description="Close a giveaway.", usage="close_giveaway <giveaway_id> <message_id> <winners>")
+async def close_giveaway(ctx, giveaway_id: str, message_id: str, winner_ids: str):
+    giveaway = await db.fetch_giveaway(giveaway_id=giveaway_id)
+    winner_ids = winner_ids.split(",")
+    
+    if not giveaway:
+        await ctx.send("Invalid giveaway ID.")
+        return
+    
+    if not winner_ids:
+        await ctx.send("You must specify at least one winner.")
+        return
+    
+    winners = []
+    
+    for winner_id in winner_ids:
+        winner = await ctx.guild.fetch_member(winner_id)
+        
+        if not winner:
+            await ctx.send(f"Invalid winner ID: {winner_id}")
+            return
+        
+        winners.append(winner.mention)
+    
+    embed_message = await ctx.channel.fetch_message(message_id)
+    embed = embed_message.embeds[0]
+    
+    embed.title = f"🎉 **{giveaway['name']}** Giveaway Results 🎉"
+    
+    embed.add_field(
+        name="🏆 Winners",
+        value="\n".join(winners),
+        inline=False
+    )
+    
+    await db.close_giveaway(giveaway_id)
+    
+    await embed_message.edit(embed=embed)
+    
+    return        
 
 async def setup(client):
-    client.add_command(giveaway)
+    client.add_command(start_giveaway)
+    client.add_command(close_giveaway)
