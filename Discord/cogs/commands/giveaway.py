@@ -88,7 +88,7 @@ class GiveawayView(discord.ui.View):
         await interaction.message.edit(embed=embed, view=self)
         
 
-
+@commands.has_role("SOSA")
 @commands.hybrid_command(name="giveaway", description='Giveaway controls.')
 async def giveaway(ctx, action: str, title: str, description: str, image_url: str, number_of_winners: Optional[int] = 1):
     if action == "create":
