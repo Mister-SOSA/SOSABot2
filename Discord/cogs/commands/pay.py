@@ -19,11 +19,17 @@ async def pay(ctx, amount: discord.app_commands.Range[int, 1, None], user: disco
     sender_balance = await db.fetch_user_balance(discord_id=ctx.author.id)
 
     if amount > sender_balance:
-        await ctx.send("You don't have enough coins to make this payment.")
+        embed = discord.Embed(
+            title="❌ Payment Error",
+            description=f"You are {amount - sender_balance} coins short of making this payment.",
+            color=discord.Color.red()
+        )
+        
+        await ctx.send(embed=embed, ephemeral=True, delete_after=5)
         return
 
-    await db.adjust_user_balance(amount=-amount, kick_id=ctx.author.id)
-    await db.adjust_user_balance(amount=amount, kick_id=user.id)
+    await db.adjust_user_balance(amount=-amount, discord_id=ctx.author.id)
+    await db.adjust_user_balance(amount=amount, discord_id=user.id)
 
     embed = discord.Embed(
         title=f"💸 Payment",
