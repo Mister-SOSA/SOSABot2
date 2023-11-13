@@ -334,3 +334,18 @@ async def number_of_entries(giveaway_id):
     if result:
         return sum([entry['number_of_entries'] for entry in result])
     return 0
+
+async def fetch_raw_entries(giveaway_id):
+    """ Returns the raw list of entries for a giveaway
+    This is for pasting into a wheel spinner. Users will
+    be listed multiple times based on their number of entries.
+    """
+    
+    result = client.table(GIVEAWAY_ENTRIES_TABLE).select("discord_name", "number_of_entries").eq('giveaway_id', giveaway_id).execute().data
+    if result:
+        entries = []
+        for entry in result:
+            for i in range(entry['number_of_entries']):
+                entries.append(entry['discord_name'])
+        return entries
+    return None
