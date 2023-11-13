@@ -14,7 +14,7 @@ async def cog_reload(ctx, cog: str = None):
         return
     
     try:
-        ctx.bot.reload_extension(f"cogs.{cog}")
+        await ctx.bot.reload_extension(f"cogs.{cog}")
         
         embed = discord.Embed(
             title="🔄️ Reloaded",
@@ -33,9 +33,9 @@ async def cog_reload(ctx, cog: str = None):
         await ctx.send(embed=embed)
         
 
-def reload_all(ctx):
+async def reload_all(ctx):
     for cog in ctx.bot.cogs:
-        ctx.bot.reload_extension(f"cogs.{cog}")
+        await ctx.bot.reload_extension(f"cogs.{cog}")
 
 async def setup(client):
     client.add_command(cog_reload)
