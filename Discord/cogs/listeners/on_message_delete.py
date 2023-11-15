@@ -21,6 +21,9 @@ class OnMessageDelete(commands.Cog):
             color=discord.Color.red()
         )
         
+        if msg.attachments:
+            embed.set_image(url=msg.attachments[0].url)
+        
         embed.add_field(name="Message Author", value=msg.author.mention)
         embed.add_field(name="Message Content", value=msg.content)
         
