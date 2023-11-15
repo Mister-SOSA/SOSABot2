@@ -41,5 +41,6 @@ COMMAND = Command(
     cooldown = 10,
     cost = 50,
     category = "FUN",
-    enabled = True
+    enabled = True,
+    stream_only = True
 )

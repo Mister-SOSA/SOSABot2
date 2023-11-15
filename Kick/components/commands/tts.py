@@ -1,12 +1,21 @@
 from objects.command import Command
-import requests
+import os
+import aiohttp
 
 async def run(client, msg, args):
     if len(args) == 0:
         await msg.chatroom.send("Please specify a message.")
         return
     
-    await msg.chatroom.send()
+    TTS_ENDPOINT = os.getenv("TTS_ENDPOINT")
+    
+    async with aiohttp.ClientSession() as session:
+        async with session.post(TTS_ENDPOINT, json={"message": " ".join(args)}) as resp:
+            if resp.status == 200:
+                await msg.chatroom.send(f"🔊 {msg.author.mention} said: {await resp.text()}")
+            else:
+                await msg.chatroom.send(f"An error occurred while trying to send the message. ({resp.status})")
+                
     
 COMMAND = Command(
     func = run,
@@ -19,5 +28,6 @@ COMMAND = Command(
     cooldown = 5,
     cost = 15,
     category = "FUN",
-    enabled = False
+    enabled = False,
+    stream_only = True
 )

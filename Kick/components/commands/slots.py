@@ -42,5 +42,6 @@ COMMAND = Command(
     cooldown=5,
     cost=0,
     category="ECONOMY",
-    enabled=True
+    enabled=True,
+    stream_only=False
 )

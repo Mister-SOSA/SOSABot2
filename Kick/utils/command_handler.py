@@ -66,6 +66,14 @@ class CommandChecker:
         if cmd_obj.cost > 0 and cmd_obj.cost > await db.fetch_user_balance(kick_id=msg.author.id):
             await msg.chatroom.send(f"@{author.username} Insufficient coins. You need {cmd_obj.cost} coins.")
             return False
+        
+        #########################
+        # ADD STREAM ONLY CHECK HERE
+        #########################
+        
+        # if cmd_obj.stream_only and not msg.chatroom.is_stream:
+        #     await msg.chatroom.send(f"@{author.username} This command can only be used in a stream.")
+        #     return False
 
         return True
 

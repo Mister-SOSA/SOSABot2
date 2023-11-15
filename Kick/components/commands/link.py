@@ -64,5 +64,6 @@ COMMAND = Command(
     cooldown=0,
     cost=0,
     category="GENERAL",
-    enabled=True
+    enabled=True,
+    stream_only=False
 )

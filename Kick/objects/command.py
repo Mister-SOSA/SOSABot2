@@ -28,6 +28,8 @@ class Command:
             The category under which the command falls, e.g. 'GENERAL'. Default is 'GENERAL'.
         - enabled (bool, optional): 
             Whether the command is currently enabled or not. Default is True.
+        - stream_only (bool, optional):
+            Whether the command can only be executed during a stream or not. Default is False.
     
     Methods:
         - execute(*args, **kwargs): 
@@ -45,6 +47,7 @@ class Command:
     cost: int = 0
     category: str = "GENERAL"
     enabled: bool = True
+    stream_only: bool = False
 
     def execute(self, *args, **kwargs):
         """Executes the command's function with the provided arguments and returns the result."""
